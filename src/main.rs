@@ -3,7 +3,7 @@ use std::process;
 use image;
 use clap::{self, SubCommand, clap_app, crate_authors};
 
-use mirage::*;
+use mimage::*;
 
 // FINAL PROJECT
 //
@@ -45,22 +45,37 @@ fn main() {
         (author: "Leonardo Espinosa <leo@dabinsi.com>")
         (about: "Basic processing images")
         (@subcommand blur =>
-            (about: "blurring image")
+            (about: "blurring an image")
             (version: "1.0")
             (@arg sigma: "Sigma")
             (@arg inputfile: "Input file")
             (@arg outputfile: "Output file")
         )
+        (@subcommand crop =>
+            (about: "cropping an image")
+            (version: "1.0")
+            (@arg x: "x coordinate")
+            (@arg y: "y coordinate")
+            (@arg width: "width")
+            (@arg height: "height")
+            (@arg inputfile: "Input file")
+            (@arg outputfile: "Output file")
+        )
+        (@subcommand fractal =>
+            (about: "generating a fractal")
+            (version: "1.0")
+            (@arg outputfile: "Output file")
+        )
     ).get_matches();
 
-    if let Err(e) = mirage::run(matches) {
+    if let Err(e) = mimage::run(matches) {
         println!("Application error: {}", e);
 
         process::exit(1);
     }
 
 
-
+    process::exit(0);
     
 
     let mut args: Vec<String> = std::env::args().skip(1).collect();

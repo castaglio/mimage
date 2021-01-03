@@ -1,31 +1,31 @@
 use std::io::{self, Error};
 use image::*;
 
-use super::super::{FileArg, SubCommand};
-
-pub struct Blur <'a> {
+use super::super::{FileArg, SubCommand, Coord, Size};
+pub struct Crop <'a> {
     filearg: FileArg<'a>,
-    sigma: f32,
+    coord: Coord,
+    size: Size,
 }
 
-impl<'a> Blur<'a> {
-    pub fn new(filearg: FileArg, sigma: f32) -> Blur {
-        Blur { filearg, sigma }
+impl<'a> Crop<'a> {
+    pub fn new(filearg: FileArg, coord: Coord, size: Size) -> Crop {
+        Crop { filearg, coord, size }
     }
 }
 
-impl<'a> SubCommand for Blur<'a> {
+impl<'a> SubCommand for Crop<'a> {
     fn command(&self) -> io::Result<()> {
         match image::open(self.filearg.infile) {
-            Ok(img) => {
-                let img2 = img.blur(self.sigma);
+            Ok(mut img) => {
+                let img2 = img.crop(self.coord.x, self.coord.y, self.size.width, self.size.height);
                 img2.save(self.filearg.outfile)
             },
             Err(err) => {
                 match err {
                     ImageError::IoError(ioerror) => {
                         println!("Error file {}: {}", self.filearg.infile, ioerror);
-                        return Err(ioerror)
+                        Err(ioerror)
                     } ,
                     _ => {
                         println!("Error {}", err);
@@ -36,4 +36,3 @@ impl<'a> SubCommand for Blur<'a> {
         }
     }
 }
-
